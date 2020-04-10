@@ -42,7 +42,7 @@ func (gr *GentooRepository) GetPackages(packageReq PackageRequest) ([]PackageRes
 		}
 		filename := strings.ReplaceAll(file.GetName(), ".ebuild", "")
 		version := strings.ReplaceAll(filename, fmt.Sprintf("%s-", packageReq.Name), "")
-		Packages = append(Packages, PackageResult{Name: packageReq.Name, Category: packageReq.Category, Version: version})
+		Packages = append(Packages, PackageResult{Path: file.GetPath(), Name: packageReq.Name, Category: packageReq.Category, Version: version})
 	}
 
 	return Packages, nil
@@ -54,14 +54,17 @@ func (gr *GentooRepository) GetLatestPackage(packageReq PackageRequest) (Package
 		return PackageResult{}, err
 	}
 
+	versionMap := make(map[string]PackageResult)
 	var versions []string
 	for _, p := range results {
+		versionMap[p.Version] = p
 		versions = append(versions, p.Version)
 	}
 
 	ver := versioner.WrappedVersioner{}
 
 	sorted := ver.Sort(versions)
+	best := sorted[len(sorted)-1]
 
-	return PackageResult{Name: packageReq.Name, Category: packageReq.Category, Version: sorted[len(sorted)-1]}, nil
+	return PackageResult{Path: versionMap[best].Path, Name: packageReq.Name, Category: packageReq.Category, Version: best}, nil
 }

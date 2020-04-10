@@ -43,6 +43,7 @@ type PackageResult struct {
 	Name     string
 	Category string
 	Version  string
+	Path     string
 }
 
 type PackageRequest struct {
