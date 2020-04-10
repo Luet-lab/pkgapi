@@ -22,6 +22,6 @@ Retrieve all versions available of a package
 
 - Gentoo
 
-## Run 
+## Run
 
 Simply start it. You can specify the `HOST`, `PORT` and `GITHUB_TOKEN` environment variables
