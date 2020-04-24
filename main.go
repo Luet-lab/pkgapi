@@ -29,6 +29,8 @@ func NewRepositoryType(req PackageRequest) RepositoryType {
 	switch req.RepositoryType {
 	case "gentoo":
 		return &GentooRepository{}
+	case "sabayon":
+		return &SabayonRepository{}
 	default:
 		return nil
 	}
