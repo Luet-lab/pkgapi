@@ -16,11 +16,12 @@ Retrieve all versions available of a package
 - **repo** repository name (e.g. sabayon-distro, gentoo, etc. )
 - **category** package category (e.g. app-text, sys-libs, etc. )
 - **name** package name (e.g. tree, vim, etc. )
-- **repository_type** repository type (e.g. gentoo )
+- **repository_type** repository type (e.g. gentoo, sabayon )
 
 ## Supported repository trees
 
 - Gentoo
+- Sabayon
 
 ## Run
 
