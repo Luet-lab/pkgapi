@@ -21,6 +21,7 @@ import (
 )
 
 type RepositoryType interface {
+	AllPackages(PackageRequest) ([]PackageResult, error)
 	GetPackages(PackageRequest) ([]PackageResult, error)
 	GetLatestPackage(PackageRequest) (PackageResult, error)
 }
@@ -62,8 +63,9 @@ func main() {
 
 	m.Use(macaron.Renderer())
 
-	m.Post("/api/latest/", binding.Bind(PackageRequest{}), LatestPackageVersion)
-	m.Post("/api/versions/", binding.Bind(PackageRequest{}), PackageVersions)
+	m.Post("/api/latest", binding.Bind(PackageRequest{}), LatestPackageVersion)
+	m.Post("/api/versions", binding.Bind(PackageRequest{}), PackageVersions)
+	m.Post("/api/all", binding.Bind(PackageRequest{}), AllPackages)
 	//m.Post("/api/versions/", binding.Bind(pkg.DefaultPackage{}), PackageVersions)
 
 	m.Run()
@@ -73,6 +75,17 @@ func PackageVersions(ctx *macaron.Context, packageReq PackageRequest) {
 
 	repo := NewRepositoryType(packageReq)
 	Packages, err := repo.GetPackages(packageReq)
+	if err != nil {
+		handleErr(ctx, err)
+		return
+	}
+	ctx.JSON(200, Result{Packages: Packages})
+}
+
+func AllPackages(ctx *macaron.Context, packageReq PackageRequest) {
+
+	repo := NewRepositoryType(packageReq)
+	Packages, err := repo.AllPackages(packageReq)
 	if err != nil {
 		handleErr(ctx, err)
 		return

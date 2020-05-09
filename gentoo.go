@@ -48,6 +48,29 @@ func (gr *GentooRepository) GetPackages(packageReq PackageRequest) ([]PackageRes
 	return Packages, nil
 }
 
+func (gr *GentooRepository) AllPackages(packageReq PackageRequest) ([]PackageResult, error) {
+	var Packages []PackageResult
+
+	client := GitHubClient()
+	_, dir, _, err := client.Repositories.GetContents(context.TODO(), packageReq.Owner, packageReq.Repo, "", nil)
+	if err != nil {
+		return Packages, errors.Wrap(err, "Failed contacting github")
+	}
+
+	for _, file := range dir {
+		category := file.GetName()
+		_, atoms, _, err := client.Repositories.GetContents(context.TODO(), packageReq.Owner, packageReq.Repo, strings.Join([]string{category}, "/"), nil)
+		if err != nil {
+			return Packages, errors.Wrap(err, "Failed contacting github")
+		}
+		for _, pack := range atoms {
+			Packages = append(Packages, PackageResult{Path: pack.GetPath(), Name: pack.GetName(), Category: category, Version: ""})
+		}
+	}
+
+	return Packages, nil
+}
+
 func (gr *GentooRepository) GetLatestPackage(packageReq PackageRequest) (PackageResult, error) {
 	results, err := gr.GetPackages(packageReq)
 	if err != nil {

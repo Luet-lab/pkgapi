@@ -75,6 +75,22 @@ func (gr *SabayonRepository) GetPackages(packageReq PackageRequest) ([]PackageRe
 	return Packages, nil
 }
 
+func (gr *SabayonRepository) AllPackages(packageReq PackageRequest) ([]PackageResult, error) {
+	var Packages []PackageResult
+
+	packages, err := CurrentPackageList(packageReq.Repo)
+	if err != nil {
+		return Packages, errors.Wrap(err, "Failed getting Sabayon package lists")
+	}
+
+	for _, p := range packages {
+		Packages = append(Packages,
+			PackageResult{Name: p.Name, Category: p.Category, Version: p.Version})
+
+	}
+	return Packages, nil
+}
+
 func (gr *SabayonRepository) GetLatestPackage(packageReq PackageRequest) (PackageResult, error) {
 	results, err := gr.GetPackages(packageReq)
 	if err != nil {
